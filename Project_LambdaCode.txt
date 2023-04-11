@@ -1,0 +1,33 @@
+function handler(event, context, callback){ 
+    var AWS = require("aws-sdk");
+    var x=event.lan_str;
+    var d=event.lan_data;
+    var t="",f=0;
+    for(var i=0;i<x.length;i++)
+    {
+        if(f==1)
+        t+=x[i];
+        if(x[i]==" ")
+        f=1;
+    }
+    var response={};
+    var translate = new AWS.Translate();
+    var params = {
+        SourceLanguageCode: 'auto',
+        TargetLanguageCode: t,
+        Text: d
+    };
+    translate.translateText(params, function (err, data) {
+        var item={};
+        if (err) response="Error";
+        else 
+        {
+            item={
+                'body': data['TranslatedText']
+            }
+            response=item;
+        }
+        callback(null, response);
+    });
+} 
+exports.handler = handler;
